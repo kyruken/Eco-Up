@@ -9,6 +9,9 @@ const questionSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    difficulty: {
+        type: String
+    },
     submissions: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Submission"
