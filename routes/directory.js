@@ -141,23 +141,70 @@ router.delete('/questions/:questionId/submissions/:submissionId', (req, res) => 
 
 //Users
 router.get('/users', (req, res) => {
-    res.json({message: "Get all users!"})
+    User.where('_id')
+    .exec((err, users) => {
+        if (err) {
+            res.sendStatus(404);
+        }
+        
+        res.json({users});
+    })
 })
 
 router.get('/users/:userId', (req, res) => {
-    res.json({message: "Get a user!"})
+    User.findById(req.params.userId, (err, user) => {
+        if (err) {
+            res.sendStatus(404);
+        }
+
+        res.json({user});
+    })
 })
 
 router.post('/users', (req, res) => {
-    res.json({message: "Create a user!"})
+    const newUser = new User({
+        username: req.body.username,
+        password: req.body.password,
+        email: req.body.email,
+        submissions: [],
+        questions: []
+    })
+
+    newUser.save();
+    res.sendStatus(200);
 })
 
-router.put('/users/:userId', (req, res) => {
-    res.json({message: "Update a user!"})
-})
+// router.put('/users/:userId', (req, res) => {
+//     User.findById(req.params.userId, (err, user) => {
+//         if (err) {
+//             res.sendStatus(400);
+//         }
+
+//         const newUser = new User({
+//             username: req.body.username,
+//             password: req.body.password,
+//             email: req.body.email,
+//             submissions: user.submissions,
+//             questions: user.questions
+//         })
+
+//         User.findByIdAndUpdate(req.params.userId, newUser, (err) => {
+//             if (err) {
+//                 res.sendStatus(404);
+//             }
+
+//             res.sendStatus(200);
+//         })
+//     })
+// })
 
 router.delete('/users/:userId', (req, res) => {
-    res.json({message: "Delete a user!"})
+    User.findByIdAndDelete(req.params.userId, (err) => {
+        if (err) {
+            res.sendStatus(404);
+        }
+        res.sendStatus(200);
+    })
 })
 
 module.exports = router;
