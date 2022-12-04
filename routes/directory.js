@@ -47,7 +47,7 @@ router.put('/questions/:questionId', (req, res) => {
         if (err) {
             res.sendStatus(404);
         }
-        
+
         const newQuestion = new Question({
             _id: req.params.questionId,
             title: req.body.title,
@@ -77,23 +77,66 @@ router.delete('/questions/:questionId', (req, res) => {
 
 //Submissions
 router.get('/questions/:questionId/submissions', (req, res) => {
-    res.json({message: "Get all submissions!"})
+    Submission.where('_id')
+    .exec((err, submissions) => {
+        if (err) {
+            res.sendStatus(400);
+        }
+
+        res.json({submissions});
+    })
 })
 
 router.get('/questions/:questionId/submissions/:submissionId', (req, res) => {
-    res.json({message: "Get a submission!"})
+    Submission.findById(req.params.submissionId, (err, submission) => {
+        if (err) {
+            res.sendStatus(404);
+        }
+        
+        res.json({submission});
+    })
 })
 
 router.post('/questions/:questionId/submissions', (req, res) => {
-    res.json({message: "Create a submission!"})
+    const newSubmission = new Submission({
+        username: req.body.username,
+        answer: req.body.answer
+    })
+
+    newSubmission.save();
+
+    res.sendStatus(200);
 })
 
-router.put('/questions/:questionId/submissions', (req, res) => {
-    res.json({message: "Update a question!"})
+router.put('/questions/:questionId/submissions/:submissionId', (req, res) => {
+    Submission.findById(req.params.submissionId, (err, submission) => {
+        if (err) {
+            res.sendStatus(404);
+        }
+
+        const newSubmission = new Submission({
+            _id: req.params.submissionId,
+            username: req.body.username,
+            answer: req.body.answer
+        })
+
+        Submission.findByIdAndUpdate(req.params.submissionId, newSubmission, (err) => {
+            if (err) {
+                res.sendStatus(404);
+            }
+    
+            res.sendStatus(200);
+        })
+    })
 })
 
 router.delete('/questions/:questionId/submissions/:submissionId', (req, res) => {
-    res.json({message: "Delete a question!"})
+    Submission.findByIdAndDelete(req.params.submissionId, (err) => {
+        if (err) {
+            res.sendStatus(404);
+        }
+        res.sendStatus(200);
+    })
 })
 
 //Users
