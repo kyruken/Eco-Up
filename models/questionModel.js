@@ -9,10 +9,10 @@ const questionSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    submissions: {
+    submissions: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Submission"
-    },
+    }],
 })
 
 module.exports = mongoose.model("Question", questionSchema);
