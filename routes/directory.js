@@ -1,5 +1,5 @@
 const express = require('express');
-
+const bcrypt = require('bcryptjs');
 const router = express.Router();
 
 const Question = require('../models/questionModel');
@@ -162,16 +162,22 @@ router.get('/users/:userId', (req, res) => {
 })
 
 router.post('/users', (req, res) => {
-    const newUser = new User({
-        username: req.body.username,
-        password: req.body.password,
-        email: req.body.email,
-        submissions: [],
-        questions: []
-    })
+    bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
+        if (err) {
+            res.sendStatus(400);
+        }
 
-    newUser.save();
-    res.sendStatus(200);
+        const newUser = new User({
+            username: req.body.username,
+            password: hashedPassword,
+            email: req.body.email,
+            submissions: [],
+            questions: []
+        })
+
+        newUser.save();
+        res.redirect('/');
+    })
 })
 
 // router.put('/users/:userId', (req, res) => {
