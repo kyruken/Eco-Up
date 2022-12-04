@@ -10,6 +10,7 @@ mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true});
 const db = mongoose.connection;
 db.on('error', (err) => console.log(err));
 
+app.use(express.urlencoded({extended: true}));
 const directoryRouter = require('./routes/directory');
 
 app.use('/', directoryRouter);
