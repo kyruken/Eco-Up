@@ -2,26 +2,77 @@ const express = require('express');
 
 const router = express.Router();
 
+const Question = require('../models/questionModel');
+const User = require('../models/userModel');
+const Submission = require('../models/submissionModel');
+
 //CRUD Operations
 //Questions
 router.get('/questions', (req, res) => {
-    res.json({message: "Get all questions!"})
+    Question.where('_id')
+    .exec((err, questions) => {
+        if (err) {
+            res.sendStatus(404);
+        }
+
+        res.json({questions})
+    })
 })
 
 router.get('/questions/:questionId', (req, res) => {
-    res.json({message: "Get a question!"})
+    Question.findById(req.params.questionId, (err, question) => {
+        if (err) {
+            res.sendStatus(404);
+        }
+
+        res.json({question});
+    })
 })
 
 router.post('/questions', (req, res) => {
-    res.json({message: "Create a question!"})
+
+    const newQuestion = new Question({
+        title: req.body.title,
+        description: req.body.description,
+        submissions: []
+    })
+
+    newQuestion.save();
+
+    res.json({newQuestion})
 })
 
 router.put('/questions/:questionId', (req, res) => {
-    res.json({message: "Update a question!"})
+    Question.findById(req.params.questionId, (err, question) => {
+        if (err) {
+            res.sendStatus(404);
+        }
+        
+        const newQuestion = new Question({
+            _id: req.params.questionId,
+            title: req.body.title,
+            description: req.body.description,
+            submissions: typeof question.submissions !== 'undefined' ? [] : question.submissions
+        })
+
+        Question.findByIdAndUpdate(req.params.questionId, newQuestion, (err) => {
+            if (err) {
+                res.sendStatus(404);
+            }
+    
+            res.sendStatus(200);
+        })
+    
+    })
 })
 
 router.delete('/questions/:questionId', (req, res) => {
-    res.json({message: "Delete a question!"})
+    Question.findByIdAndDelete(req.params.questionId, (err) => {
+        if (err) {
+            res.sendStatus(404);
+        }
+        res.sendStatus(200);
+    })
 })
 
 //Submissions
