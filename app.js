@@ -5,6 +5,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const cors = require('cors');
 
 const User = require('./models/userModel');
 const app = express();
@@ -15,6 +16,11 @@ db.on('error', (err) => console.log(err));
 
 app.use(express.urlencoded({extended: true}));
 const directoryRouter = require('./routes/directory');
+
+app.use(cors({
+    origin: '*',
+    methods: ['POST', 'GET']
+}))
 
 app.use('/', directoryRouter);
 
