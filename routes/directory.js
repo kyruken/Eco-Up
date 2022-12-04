@@ -34,6 +34,7 @@ router.post('/questions', (req, res) => {
     const newQuestion = new Question({
         title: req.body.title,
         description: req.body.description,
+        difficulty: req.body.difficulty,
         submissions: []
     })
 
@@ -77,13 +78,18 @@ router.delete('/questions/:questionId', (req, res) => {
 
 //Submissions
 router.get('/questions/:questionId/submissions', (req, res) => {
-    Submission.where('_id')
-    .exec((err, submissions) => {
+    Question.findById(req.params.questionId, (err, question) => {
         if (err) {
-            res.sendStatus(400);
+            res.sendStatus(500);
         }
+        Submission.where('_id').equals(question.submissions)
+        .exec((err, submissions) => {
+            if (err) {
+                res.sendStatus(500);
+            }
+            res.json({submissions: submissions});
+        })
 
-        res.json({submissions});
     })
 })
 
@@ -98,14 +104,23 @@ router.get('/questions/:questionId/submissions/:submissionId', (req, res) => {
 })
 
 router.post('/questions/:questionId/submissions', (req, res) => {
-    const newSubmission = new Submission({
-        username: req.body.username,
-        answer: req.body.answer
+    Question.findById(req.params.questionId, (err, question) => {
+        if (err) {
+            res.sendStatus(500);
+        }
+
+        const newSubmission = new Submission({
+            answer: req.body.answer
+        })
+
+        question.submissions.push(newSubmission);
+    
+        newSubmission.save();
+        question.save();
+    
+        res.sendStatus(200);
+        
     })
-
-    newSubmission.save();
-
-    res.sendStatus(200);
 })
 
 router.put('/questions/:questionId/submissions/:submissionId', (req, res) => {
