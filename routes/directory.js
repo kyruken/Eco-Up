@@ -6,6 +6,10 @@ const Question = require('../models/questionModel');
 const User = require('../models/userModel');
 const Submission = require('../models/submissionModel');
 
+router.get('/', (req, res) => {
+    res.json({message:"go to /questions, /submissions, or /users!"});
+})
+
 //CRUD Operations
 //Questions
 router.get('/questions', (req, res) => {
