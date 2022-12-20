@@ -33,7 +33,7 @@ app.post('/login', (req, res, next) => {
             return next(err);
         }
         if (user.username !== req.body.username) {
-            return res.json({message: "Wrong username"});
+            return res.json({message: "Invalid username"});
         }
 
         bcrypt.compare(req.body.password, user.password, (err, match) => {
@@ -47,7 +47,7 @@ app.post('/login', (req, res, next) => {
                 });
                 
             } else {
-                res.send('Wrong password');
+                res.json({message: 'Wrong password'});
             }
         })
     })
