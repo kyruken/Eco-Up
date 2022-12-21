@@ -43,7 +43,7 @@ app.post('/login', (req, res, next) => {
 
             if (match) {
                 jwt.sign({user}, process.env.SECRET_KEY, {expiresIn: '1h'}, (err, token) => {
-                    res.json({token});
+                    res.json({user: user, token: token});
                 });
                 
             } else {
