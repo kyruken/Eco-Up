@@ -87,6 +87,7 @@ router.get('/questions/:questionId/submissions', (req, res) => {
             res.sendStatus(500);
         }
         Submission.where('_id').equals(question.submissions)
+        .populate('user')
         .exec((err, submissions) => {
             if (err) {
                 res.sendStatus(500);
@@ -114,11 +115,23 @@ router.post('/questions/:questionId/submissions', (req, res) => {
         }
 
         const newSubmission = new Submission({
-            answer: req.body.answer
+            answer: req.body.answer,
+            user: req.body.user
         })
 
         question.submissions.push(newSubmission);
-    
+
+
+        User.findById(req.body.user, (err, user) => {
+            if (err) {
+                return res.sendStatus(500);
+            }
+
+            user.submissions.push(newSubmission);
+            user.questions.push(req.body.question);
+            user.save();
+        })
+
         newSubmission.save();
         question.save();
     
